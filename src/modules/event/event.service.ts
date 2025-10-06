@@ -7,6 +7,7 @@ import { AddEventDto } from './dto/add-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { UpdateEventStatusDto } from './dto/update-status.dto';
 import { SearchDto } from 'src/common/dto/pagnation.dto';
+import { GetEventDTO } from './dto/get-event.dto';
 
 @Injectable()
 export class EventService {
@@ -51,7 +52,7 @@ export class EventService {
     }
   }
 
-  async getAllEvents(searchDto: SearchDto): Promise<any> {
+  async getAllEvents(getEventDTO: GetEventDTO): Promise<any> {
     try {
       const {
         page = 1,
@@ -60,15 +61,35 @@ export class EventService {
         sortOrder = 'desc',
         search,
         searchFields,
-      } = searchDto || ({} as SearchDto);
+        eventType,
+      } = getEventDTO || ({} as GetEventDTO);
 
+      console.log('getEventDTO', eventType);
+
+      const today = new Date();
       const match: Record<string, any> = {};
 
+      const addFieldsStage = {
+        $addFields: {
+          dateFromDate: { $toDate: '$dateFrom' }, // assumes dateFrom is like "2025-12-06"
+        },
+      };
+
+      // Filter based on event type
+      if (eventType === 'PAST') {
+        match.dateFromDate = { $lt: today };
+      } else if (eventType === 'UPCOMING') {
+        match.dateFromDate = { $gte: today };
+      }
+      // Optional search filter
       if (search && searchFields) {
         const fields = searchFields.split(',').map((f) => f.trim());
-        match.$or = fields.map((field) => ({
-          [field]: { $regex: search, $options: 'i' },
-        }));
+        match.$and = match.$and || []; // ensure we can combine multiple conditions
+        match.$and.push({
+          $or: fields.map((field) => ({
+            [field]: { $regex: search, $options: 'i' },
+          })),
+        });
       }
 
       const sort: Record<string, 1 | -1> = {
@@ -77,6 +98,7 @@ export class EventService {
       const skip = (page - 1) * limit;
 
       const pipeline = [
+        addFieldsStage,
         { $match: match },
         { $sort: sort },
         {

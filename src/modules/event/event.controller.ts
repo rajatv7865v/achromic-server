@@ -26,6 +26,7 @@ import { AddEventDto } from './dto/add-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { UpdateEventStatusDto } from './dto/update-status.dto';
 import { SearchDto } from 'src/common/dto/pagnation.dto';
+import { GetEventDTO } from './dto/get-event.dto';
 
 @ApiTags('Event')
 @Controller('event')
@@ -145,9 +146,8 @@ export class EventController {
       },
     },
   })
-  getAllEvents(@Query() searchDto: SearchDto) {
-   
-    return this.eventService.getAllEvents(searchDto);
+  getAllEvents(@Query() getEventDTO: GetEventDTO) {
+    return this.eventService.getAllEvents(getEventDTO);
   }
 
   @Get('slug/:slug')
