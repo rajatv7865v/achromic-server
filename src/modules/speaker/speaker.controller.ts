@@ -6,10 +6,13 @@ import {
   HttpCode,
   Param,
   Post,
+  Query,
 } from '@nestjs/common';
 import { SpeakerService } from './speaker.service';
 import { ApiTags } from '@nestjs/swagger';
 import { AddSpeakerDto } from './dto/add-speaker.dto';
+import { SearchDto } from 'src/common/dto/pagnation.dto';
+import { CustomHttpException } from 'src/core/exceptions';
 
 @ApiTags('Speaker')
 @Controller('speaker')
@@ -23,9 +26,13 @@ export class SpeakerController {
   }
 
   @HttpCode(200)
-  @Get()
-  getSpeaker() {
-    return this.speakerService.getSpeaker();
+  @Get(':eventId')
+  getSpeaker(@Query() searchDto: SearchDto, @Param('eventId') eventId: string) {
+    try {
+      return this.speakerService.getSpeaker(eventId,searchDto);
+    } catch (error) {
+      throw new CustomHttpException(error.status, error.message);
+    }
   }
 
   @HttpCode(200)

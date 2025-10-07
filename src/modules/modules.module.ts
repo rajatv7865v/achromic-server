@@ -9,6 +9,7 @@ import { MembershipModule } from './membership/membership.module';
 import { AuthModule } from 'src/authantication/auth.module';
 import { CategoryModule } from './category/category.module';
 import { MagazineModule } from './magzine/magzine.module';
+import { AgendaModule } from './agenda/agenda.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { MagazineModule } from './magzine/magzine.module';
     TicketModule,
     MembershipModule,
     CategoryModule,
-    MagazineModule
+    MagazineModule,
+    AgendaModule
   ],
 })
 export class ModulesModule {}

@@ -9,6 +9,7 @@ import {
   Patch,
   Put,
   Post,
+  Query,
 } from '@nestjs/common';
 import { PartnerService } from './partner.service';
 import {
@@ -25,6 +26,7 @@ import { AddPartnerDto } from './dto/add-partner.dto';
 import { ParseObjectIdPipe } from 'src/core/pipe/parse-object-id.pipe';
 import { Types } from 'mongoose';
 import { CustomHttpException } from 'src/core/exceptions';
+import { SearchDto } from 'src/common/dto/pagnation.dto';
 
 @ApiTags('Partner')
 @Controller('partner')
@@ -42,27 +44,30 @@ export class PartnerController {
   }
 
   @HttpCode(200)
-  @Get()
+  @Get(':eventId')
   @ApiOperation({ summary: 'Get Partners' })
   @ApiOkResponse({ description: 'Partners retrieved successfully' })
-  getPartner(): Promise<any> {
-    return this.partnerService.getPartner();
+  getPartner(
+    @Query() searchDto: SearchDto,
+    @Param('eventId') eventId: string,
+  ): Promise<any> {
+    return this.partnerService.getPartner(eventId,searchDto);
   }
 
-  @ApiOperation({ summary: 'Get Partner by ID' })
-  @ApiParam({ name: 'id', type: 'string', description: 'Partner ID' })
-  @ApiOkResponse({ description: 'Partner retrieved successfully' })
-  @ApiNotFoundResponse({ description: 'Partner not found' })
-  @HttpCode(200)
-  @Get(':id')
-  getPartnerById(
-    @Param('id', ParseObjectIdPipe) id: Types.ObjectId,
-  ): Promise<any> {
-    // Expecting partnerService.getPartnerById to exist in service
-    // If not, implement accordingly
-    // @ts-ignore
-    return this.partnerService.getPartnerById(id);
-  }
+  // @ApiOperation({ summary: 'Get Partner by ID' })
+  // @ApiParam({ name: 'id', type: 'string', description: 'Partner ID' })
+  // @ApiOkResponse({ description: 'Partner retrieved successfully' })
+  // @ApiNotFoundResponse({ description: 'Partner not found' })
+  // @HttpCode(200)
+  // @Get(':id')
+  // getPartnerById(
+  //   @Param('id', ParseObjectIdPipe) id: Types.ObjectId,
+  // ): Promise<any> {
+  //   // Expecting partnerService.getPartnerById to exist in service
+  //   // If not, implement accordingly
+  //   // @ts-ignore
+  //   return this.partnerService.getPartnerById(id);
+  // }
 
   @ApiOperation({ summary: 'Update Partner' })
   @ApiParam({ name: 'id', type: 'string', description: 'Partner ID' })

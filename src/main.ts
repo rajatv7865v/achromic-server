@@ -31,6 +31,7 @@ async function bootstrap() {
       `Application is running on: ${configService.get('APP.APP_URL')}/${configService.get('APP.APP_PORT')} `,
     );
   } catch (error) {
+    console.error(error)
     logger.error('Error starting the application:', error);
   }
 }

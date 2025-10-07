@@ -8,6 +8,9 @@ export class Partner {
   name: string;
 
   @Prop({ required: false, type: String })
+  imagePath: string;
+
+  @Prop({ required: false, type: String })
   companyPath: string;
 
   @Prop({ required: true, type: String, enum: PartnerType })

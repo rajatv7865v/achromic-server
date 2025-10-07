@@ -32,6 +32,7 @@ export class TicketService {
         data: ticket,
       };
     } catch (error) {
+      console.log(error)
       throw new CustomHttpException(error.message, error.status || 500);
     }
   }

@@ -14,6 +14,8 @@ export class Speaker {
 
   @Prop({ required: true, type: String })
   organization: string;
+  @Prop({ required: true, type: String })
+  avatar: string;
 
   @Prop({ required: true, type: String })
   linkedinUrl: string;

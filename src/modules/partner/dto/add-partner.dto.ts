@@ -11,14 +11,17 @@ export class AddPartnerDto {
   @IsNotEmpty()
   @ApiProperty()
   @IsString()
+  imagePath: string;
+
+  @IsNotEmpty()
+  @ApiProperty()
+  @IsString()
   companyUrl: string;
 
   @IsNotEmpty()
   @ApiProperty()
   @IsEnum(PartnerType)
-  partnerType:PartnerType= PartnerType.SPONSOR;
-
-
+  partnerType: PartnerType = PartnerType.SPONSOR;
 
   @IsNotEmpty()
   @ApiProperty()
