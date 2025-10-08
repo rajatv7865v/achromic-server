@@ -10,7 +10,7 @@ export class UploadService {
     return {
       message: 'File uploaded successfully',
       filename: file.filename,
-      path: `${process.env.SERVER_URL}/${file.path}`,
+      path: `https://api.test.sharkwaveinfo.com/${file.path}`,
     };
   }
 }

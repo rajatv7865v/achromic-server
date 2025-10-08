@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AddSpeakerDto } from './dto/add-speaker.dto';
+import { UpdateSpeakerDto } from './dto/update-speaker.dto';
 import { CustomHttpException } from 'src/core/exceptions';
 import { InjectModel } from '@nestjs/mongoose';
 import { SPEAKER_MODEL, SpeakerDocument } from './entity/speaker.entity';
@@ -113,6 +114,37 @@ export class SpeakerService {
       throw new CustomHttpException(error.message, error.status || 500);
     }
   }
+  async updateSpeaker(id: string, updateSpeakerDto: UpdateSpeakerDto) {
+    try {
+      const updateData: any = {};
+      
+      if (updateSpeakerDto.name) updateData.name = updateSpeakerDto.name;
+      if (updateSpeakerDto.designation) updateData.designation = updateSpeakerDto.designation;
+      if (updateSpeakerDto.company) updateData.organization = updateSpeakerDto.company;
+      if (updateSpeakerDto.country) updateData.country = updateSpeakerDto.country;
+      if (updateSpeakerDto.avatar) updateData.avatar = updateSpeakerDto.avatar;
+      if (updateSpeakerDto.linkedin) updateData.linkedinUrl = updateSpeakerDto.linkedin;
+      if (updateSpeakerDto.eventId) updateData.eventId = new Types.ObjectId(updateSpeakerDto.eventId);
+
+      const speaker = await this.speakerModel.findByIdAndUpdate(
+        new Types.ObjectId(id),
+        updateData,
+        { new: true, runValidators: true }
+      );
+
+      if (!speaker) {
+        throw new CustomHttpException('Speaker not found', 404);
+      }
+
+      return {
+        message: 'Speaker updated successfully',
+        data: speaker,
+      };
+    } catch (error: Error | any) {
+      throw new CustomHttpException(error.message, error.status);
+    }
+  }
+
   async deleteSpeaker(id: string) {
     try {
       const speaker = await this.speakerModel.findByIdAndDelete(

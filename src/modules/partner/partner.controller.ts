@@ -23,6 +23,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AddPartnerDto } from './dto/add-partner.dto';
+import { UpdatePartnerDto } from './dto/update-partner.dto';
 import { ParseObjectIdPipe } from 'src/core/pipe/parse-object-id.pipe';
 import { Types } from 'mongoose';
 import { CustomHttpException } from 'src/core/exceptions';
@@ -71,7 +72,7 @@ export class PartnerController {
 
   @ApiOperation({ summary: 'Update Partner' })
   @ApiParam({ name: 'id', type: 'string', description: 'Partner ID' })
-  @ApiBody({ type: AddPartnerDto })
+  @ApiBody({ type: UpdatePartnerDto })
   @ApiOkResponse({ description: 'Partner updated successfully' })
   @ApiBadRequestResponse({ description: 'Invalid input data' })
   @ApiNotFoundResponse({ description: 'Partner not found' })
@@ -79,11 +80,8 @@ export class PartnerController {
   @Put(':id')
   updatePartner(
     @Param('id', ParseObjectIdPipe) id: Types.ObjectId,
-    @Body() updatePartnerDto: AddPartnerDto,
+    @Body() updatePartnerDto: UpdatePartnerDto,
   ): Promise<any> {
-    // Expecting partnerService.updatePartner to exist in service
-    // If not, implement accordingly
-    // @ts-ignore
     return this.partnerService.updatePartner(id, updatePartnerDto);
   }
 
@@ -101,9 +99,6 @@ export class PartnerController {
     @Param('id', ParseObjectIdPipe) id: Types.ObjectId,
     @Body('isActive') isActive: boolean,
   ): Promise<any> {
-    // Expecting partnerService.updatePartnerStatus to exist in service
-    // If not, implement accordingly
-    // @ts-ignore
     return this.partnerService.updatePartnerStatus(id, { isActive });
   }
 

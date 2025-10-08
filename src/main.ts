@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { LoggerService } from './providers/logger/logger.service';
 import { swaggerConfig } from './swagger';
 import { TransformResponseInterceptor } from './core/interceptors';
-import { join } from 'path/win32';
+import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
@@ -18,8 +18,21 @@ async function bootstrap() {
     app.useGlobalPipes(new ValidationPipe());
     app.useGlobalInterceptors(new TransformResponseInterceptor());
 
+    // Serve static files from uploads directory
     app.useStaticAssets(join(__dirname, '..', 'uploads'), {
       prefix: '/uploads',
+      index: false, // Don't serve index.html for directory requests
+      setHeaders: (res, path) => {
+        // Set appropriate headers for different file types
+        if (path.endsWith('.jpg') || path.endsWith('.jpeg') || path.endsWith('.png') || path.endsWith('.gif')) {
+          res.setHeader('Content-Type', 'image/jpeg');
+          res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 year cache for images
+        } else if (path.endsWith('.pdf')) {
+          res.setHeader('Content-Type', 'application/pdf');
+        } else if (path.endsWith('.txt')) {
+          res.setHeader('Content-Type', 'text/plain');
+        }
+      },
     });
     // Use cookie-parser middleware
     app.use(cookieParser());

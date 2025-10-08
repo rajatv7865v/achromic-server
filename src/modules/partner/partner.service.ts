@@ -4,6 +4,7 @@ import { PARTNER_MODEL, PartnerDocument } from './entity/partner.entity';
 import { Model, Types } from 'mongoose';
 import { CustomHttpException } from 'src/core/exceptions';
 import { AddPartnerDto } from './dto/add-partner.dto';
+import { UpdatePartnerDto } from './dto/update-partner.dto';
 import { SearchDto } from 'src/common/dto/pagnation.dto';
 
 @Injectable()
@@ -56,20 +57,8 @@ export class PartnerService {
         { $match: match },
         { $sort: sort },
 
-        {
-          $project: {
-            _id: 1,
-            name: 1,
-            designation: 1,
-            company: 1,
-            country: 1,
-            avatar: 1,
-            organization: 1,
-            linkedinUrl: 1,
-            isActive: 1,
-            createdAt: 1,
-          },
-        },
+       
+        
         {
           $facet: {
             data: [{ $skip: skip }, { $limit: Number(limit) }],
@@ -100,6 +89,50 @@ export class PartnerService {
       throw new CustomHttpException(error.message, error.status || 500);
     }
   }
+  async updatePartner(id: Types.ObjectId, updatePartnerDto: UpdatePartnerDto): Promise<PartnerDocument> {
+    try {
+      const updateData: any = {};
+      
+      if (updatePartnerDto.companyName) updateData.name = updatePartnerDto.companyName;
+      if (updatePartnerDto.imagePath) updateData.imagePath = updatePartnerDto.imagePath;
+      if (updatePartnerDto.companyUrl) updateData.companyPath = updatePartnerDto.companyUrl;
+      if (updatePartnerDto.partnerType) updateData.partnerType = updatePartnerDto.partnerType;
+      if (updatePartnerDto.eventId) updateData.eventId = [new Types.ObjectId(updatePartnerDto.eventId)];
+
+      const partner = await this.partnerModel.findByIdAndUpdate(
+        id,
+        updateData,
+        { new: true, runValidators: true }
+      );
+
+      if (!partner) {
+        throw new CustomHttpException('Partner not found', 404);
+      }
+
+      return partner;
+    } catch (error: any) {
+      throw new CustomHttpException(error.message, error.status);
+    }
+  }
+
+  async updatePartnerStatus(id: Types.ObjectId, statusData: { isActive: boolean }): Promise<PartnerDocument> {
+    try {
+      const partner = await this.partnerModel.findByIdAndUpdate(
+        id,
+        { isActive: statusData.isActive },
+        { new: true, runValidators: true }
+      );
+
+      if (!partner) {
+        throw new CustomHttpException('Partner not found', 404);
+      }
+
+      return partner;
+    } catch (error: any) {
+      throw new CustomHttpException(error.message, error.status);
+    }
+  }
+
   async deletePartner(id: Types.ObjectId): Promise<any[]> {
     try {
       return this.partnerModel.findByIdAndDelete(id);
